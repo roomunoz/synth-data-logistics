@@ -194,65 +194,59 @@ El sistema transforma datos operacionales provenientes de PostgreSQL en un model
 
 Incluye:
 
-\- Modelo en estrella (Kimball)
+- Modelo en estrella (Kimball)
 
-\- Pipeline ETL automático en Python
+- Pipeline ETL automático en Python
 
-\- Cálculo de métricas operativas y financieras
+- Cálculo de métricas operativas y financieras
 
-\- Seguridad por roles y auditoría histórica
+- Seguridad por roles y auditoría histórica
 
+---
 
-
-\---
-
-
-
-\## Arquitectura del sistema
+## Arquitectura del sistema
 
 
 
 \*\*Origen (OLTP):\*\*
 
-\- PostgreSQL  
+- PostgreSQL  
 
-\- Tablas operacionales: deliveries, trips, drivers, vehicles, routes
+- Tablas operacionales: deliveries, trips, drivers, vehicles, routes
 
+*\*Proceso:\*\*
 
+- ETL desarrollado en Python
 
-\*\*Proceso:\*\*
+- Transformaciones con pandas
 
-\- ETL desarrollado en Python
-
-\- Transformaciones con pandas
-
-\- Automatización diaria con `schedule`
+- Automatización diaria con `schedule`
 
 
 
-\*\*Destino (OLAP):\*\*
+*\*Destino (OLAP):\*\*
 
-\- Snowflake Data Warehouse
+- Snowflake Data Warehouse
 
-\- Esquema ANALYTICS
-
-
-
-\---
+- Esquema ANALYTICS
 
 
 
-\## Modelo Dimensional
+---
 
 
 
-\### Tabla de Hechos
+## Modelo Dimensional
 
-\*\*fact\_deliveries\*\*
 
-\- Cada fila representa una entrega completada
 
-\- Métricas principales:
+### Tabla de Hechos
+
+*\*fact\_deliveries\*\*
+
+- Cada fila representa una entrega completada
+
+- Métricas principales:
 
 &#x20; - Tiempo de entrega
 
@@ -268,41 +262,41 @@ Incluye:
 
 
 
-\### Dimensiones
+### Dimensiones
 
-\- \*\*dim\_date\*\*: calendario completo (días, meses, trimestres, fines de semana)
+- \*\*dim\_date\*\*: calendario completo (días, meses, trimestres, fines de semana)
 
-\- \*\*dim\_time\*\*: análisis por hora, turnos y franjas horarias
+- \*\*dim\_time\*\*: análisis por hora, turnos y franjas horarias
 
-\- \*\*dim\_vehicle\*\*: información del vehículo (SCD Type 2)
+- \*\*dim\_vehicle\*\*: información del vehículo (SCD Type 2)
 
-\- \*\*dim\_driver\*\*: datos y experiencia del conductor (SCD Type 2)
+- \*\*dim\_driver\*\*: datos y experiencia del conductor (SCD Type 2)
 
-\- \*\*dim\_route\*\*: rutas, distancia y dificultad
+- \*\*dim\_route\*\*: rutas, distancia y dificultad
 
-\- \*\*dim\_customer\*\*: clientes y segmentación
-
-
-
-\---
+- \*\*dim\_customer\*\*: clientes y segmentación
 
 
 
-\## Pipeline ETL
+---
 
 
 
-\### Extracción
-
-\- Datos diarios desde PostgreSQL
-
-\- Límite de \*\*400 registros\*\* para pruebas de rendimiento
+## Pipeline ETL
 
 
 
-\### Transformación
+### Extracción
 
-\- Cálculo de métricas:
+- Datos diarios desde PostgreSQL
+
+- Límite de \*\*400 registros\*\* para pruebas de rendimiento
+
+
+
+### Transformación
+
+- Cálculo de métricas:
 
 &#x20; - Entregas por hora
 
@@ -310,79 +304,79 @@ Incluye:
 
 &#x20; - Costos e ingresos por entrega
 
-\- Validaciones de calidad:
+- Validaciones de calidad:
 
 &#x20; - No se permiten tiempos negativos
 
 &#x20; - Control de valores nulos y divisiones por cero
 
-\- Manejo de históricos (SCD Type 2)
+- Manejo de históricos (SCD Type 2)
 
-\- Pre-cálculo de totales diarios para reporting
-
-
-
-\### Carga
-
-\- Inserción en Snowflake
-
-\- Uso de claves sustitutas reales
-
-\- Control transaccional (commit / rollback)
+- Pre-cálculo de totales diarios para reporting
 
 
 
-\---
+### Carga
+
+- Inserción en Snowflake
+
+- Uso de claves sustitutas reales
+
+- Control transaccional (commit / rollback)
 
 
 
-\## Automatización
+---
 
 
 
-\- Ejecución diaria programada a las \*\*02:00 AM\*\*
-
-\- Implementada con la librería `schedule`
-
-\- Registro de logs y métricas de ejecución
-
-\- Batch ID para auditoría del proceso
+## Automatización
 
 
 
-\---
+- Ejecución diaria programada a las \*\*02:00 AM\*\*
+
+- Implementada con la librería `schedule`
+
+- Registro de logs y métricas de ejecución
+
+- Batch ID para auditoría del proceso
 
 
 
-\## Seguridad y Gobernanza
+---
 
 
 
-\- \*\*Time Travel\*\* activado (15 días)
+## Seguridad y Gobernanza
 
-\- Vistas seguras por rol:
+
+
+- \*\*Time Travel\*\* activado (15 días)
+
+- Vistas seguras por rol:
 
 &#x20; - Ventas: solo información de clientes permitidos
 
 &#x20; - Operaciones: acceso completo
 
-\- Separación de responsabilidades y control de accesos
+- Separación de responsabilidades y control de accesos
 
 
 
-\---
+---
 
 
 
-\## Tecnologías utilizadas
+## Tecnologías utilizadas
 
 
 
-\- \*\*Snowflake\*\* (Data Warehouse en la nube)
+- \*\*Snowflake\*\* (Data Warehouse en la nube)
 
-\- \*\*PostgreSQL\*\* (Base de datos operacional)
+- \*\*PostgreSQL\*\* (Base de datos operacional)
 
-\- \*\*Python\*\*
+- \*\*Python\*\*
 
 &#x20; - pandas
 
@@ -392,17 +386,17 @@ Incluye:
 
 &#x20; - schedule
 
-\- \*\*Jupyter Notebooks\*\*
+- \*\*Jupyter Notebooks\*\*
 
-\- \*\*DBeaver\*\* (verificación y consultas)
-
-
-
-\---
+- \*\*DBeaver\*\* (verificación y consultas)
 
 
 
-\## Notas finales
+---
+
+
+
+## Notas finales
 
 
 
@@ -416,37 +410,37 @@ Descripción del proyecto
 
 
 
-Este proyecto corresponde al \*\*Avance 4\*\* y tiene como objetivo diseñar una \*\*arquitectura en la nube con AWS\*\* para la ingesta, procesamiento y almacenamiento de datos de entregas en tiempo real de una flota de vehículos.
+Este proyecto corresponde al \*\*Avance 4\*\* y tiene como objetivo diseñar una *\*arquitectura en la nube con AWS\*\* para la ingesta, procesamiento y almacenamiento de datos de entregas en tiempo real de una flota de vehículos.
 
 La solución se basa en una arquitectura \*\*serverless\*\*, priorizando bajo costo, escalabilidad y simplicidad, alineada con el uso de AWS Free Tier.
 
 
 
-\---
+---
 
 
 
-\##Objetivos
+##Objetivos
 
 
 
-\- Diseñar una arquitectura cloud utilizando servicios fundamentales de AWS  
+- Diseñar una arquitectura cloud utilizando servicios fundamentales de AWS  
 
-\- Procesar eventos de entregas en tiempo real  
+- Procesar eventos de entregas en tiempo real  
 
-\- Almacenar datos históricos y estados actuales de entregas  
+- Almacenar datos históricos y estados actuales de entregas  
 
-\- Implementar monitoreo y alertas básicas  
+- Implementar monitoreo y alertas básicas  
 
-\- Aplicar buenas prácticas de seguridad y control de costos  
-
-
-
-\---
+- Aplicar buenas prácticas de seguridad y control de costos  
 
 
 
-\## Arquitectura propuesta
+---
+
+
+
+## Arquitectura propuesta
 
 
 
@@ -454,19 +448,19 @@ La arquitectura incluye los siguientes servicios de AWS:
 
 
 
-\- \*\*API Gateway\*\*: recibe los eventos enviados por las aplicaciones móviles de los conductores.  
+- \*\*API Gateway\*\*: recibe los eventos enviados por las aplicaciones móviles de los conductores.  
 
-\- \*\*AWS Lambda\*\*: procesa los eventos mediante funciones serverless.  
+- \*\*AWS Lambda\*\*: procesa los eventos mediante funciones serverless.  
 
-\- \*\*Amazon S3\*\*: almacena datos históricos organizados por fecha.  
+- \*\*Amazon S3\*\*: almacena datos históricos organizados por fecha.  
 
-\- \*\*Amazon RDS (PostgreSQL)\*\*: base de datos relacional administrada.  
+- \*\*Amazon RDS (PostgreSQL)\*\*: base de datos relacional administrada.  
 
-\- \*\*Amazon DynamoDB\*\*: almacena el estado actual de las entregas.  
+- \*\*Amazon DynamoDB\*\*: almacena el estado actual de las entregas.  
 
-\- \*\*Amazon CloudWatch\*\*: monitoreo y generación de alertas.  
+- \*\*Amazon CloudWatch\*\*: monitoreo y generación de alertas.  
 
-\- \*\*IAM y KMS\*\*: gestión de accesos y encriptación de datos.  
+- \*\*IAM y KMS\*\*: gestión de accesos y encriptación de datos.  
 
 
 
@@ -474,11 +468,11 @@ El diagrama de arquitectura se encuentra en la carpeta `/diagrams`.
 
 
 
-\---
+---
 
 
 
-\## Flujo de datos en tiempo real
+## Flujo de datos en tiempo real
 
 
 
@@ -486,11 +480,11 @@ Los eventos relevantes (entrega completada, retrasos, desvíos de ruta) se proce
 
 
 
-\---
+---
 
 
 
-\## Funciones Lambda
+## Funciones Lambda
 
 
 
@@ -498,19 +492,19 @@ Se implementan las siguientes funciones:
 
 
 
-\- Verificación de entrega completada  
+- Verificación de entrega completada  
 
-\- Cálculo del tiempo estimado de llegada (ETA)  
+- Cálculo del tiempo estimado de llegada (ETA)  
 
-\- Detección de desvíos de ruta y generación de alertas  
-
-
-
-\---
+- Detección de desvíos de ruta y generación de alertas  
 
 
 
-\## Monitoreo y alertas
+---
+
+
+
+## Monitoreo y alertas
 
 
 
@@ -518,7 +512,7 @@ Se configura \*\*Amazon CloudWatch\*\* para:
 
 
 
-\- Visualizar métricas clave:
+- Visualizar métricas clave:
 
 &#x20; - Entregas completadas
 
@@ -530,23 +524,23 @@ Se configura \*\*Amazon CloudWatch\*\* para:
 
 &#x20; - Estado del sistema
 
-\- Enviar alertas automáticas por correo electrónico ante eventos críticos
+- Enviar alertas automáticas por correo electrónico ante eventos críticos
 
 
 
-\---
+---
 
 
 
-\## Seguridad y backups
+## Seguridad y backups
 
 
 
-\- Uso de usuarios \*\*IAM\*\* con permisos limitados  
+- Uso de usuarios \*\*IAM\*\* con permisos limitados  
 
-\- Encriptación de datos en reposo mediante \*\*AWS KMS\*\*  
+- Encriptación de datos en reposo mediante \*\*AWS KMS\*\*  
 
-\- Backups automáticos de la base de datos en \*\*Amazon RDS\*\*  
+- Backups automáticos de la base de datos en \*\*Amazon RDS\*\*  
 
 
 
@@ -554,29 +548,29 @@ Estos mecanismos actúan de forma transversal a toda la arquitectura.
 
 
 
-\---
+---
 
 
 
-\## Tecnologías utilizadas
+## Tecnologías utilizadas
 
 
 
-\- AWS: API Gateway, Lambda, S3, RDS, DynamoDB, CloudWatch, IAM  
+- AWS: API Gateway, Lambda, S3, RDS, DynamoDB, CloudWatch, IAM  
 
-\- Python (boto3)  
+- Python (boto3)  
 
-\- Postman (pruebas de endpoints)  
+- Postman (pruebas de endpoints)  
 
-\- draw.io (diagramas)  
-
-
-
-\---
+- draw.io (diagramas)  
 
 
 
-\## Notas finales
+---
+
+
+
+## Notas finales
 
 
 
@@ -586,7 +580,7 @@ Para pruebas reales se recomienda apagar los servicios luego de la validación p
 
 
 
-\---
+---
 
 
 
